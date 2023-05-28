@@ -1,0 +1,6 @@
+[submodule "ros2bdi_ws/src/ROS2-BDI"]
+	path = ros2bdi_ws/src/ROS2-BDI
+	url = https://github.com/RTI-BDI/ROS2-BDI.git
+[submodule "plansys2_ws/src/ros2_planning_system"]
+	path = plansys2_ws/src/ros2_planning_system
+	url = https://github.com/RTI-BDI/ros2_planning_system.git

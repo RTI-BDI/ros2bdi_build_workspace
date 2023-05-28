@@ -1,0 +1,125 @@
+FROM ros:humble
+
+SHELL ["/bin/bash", "-c"]
+
+WORKDIR /root
+
+# Update to latest version
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ="Europe/London"
+RUN apt-get update
+
+RUN apt-get install -y vim gdb terminator screen
+
+# install ros package
+RUN apt-get update && apt-get install -y \
+      ros-${ROS_DISTRO}-desktop \
+      ros-${ROS_DISTRO}-demo-nodes-cpp \
+      ros-${ROS_DISTRO}-demo-nodes-py
+
+# RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /root/.bashrc
+
+RUN echo "export NUM_CORES=\$(nproc)" >> /root/.bashrc
+RUN echo "export MAKEFLAGS=-j\$NUM_CORES" >> /root/.bashrc
+RUN echo "export AMENT_BUILD_GRADLE_ARGS=-j\$NUM_CORES" >> /root/.bashrc
+RUN echo "export AMENT_BUILD_MAKE_ARGS=-j\$NUM_CORES" >> /root/.bashrc
+
+
+
+# install libboost-dev
+RUN apt-get update && apt-get install -y libboost-dev
+
+# install libyaml (0.6 and not apt-get install libyaml-cpp0.7)
+RUN git clone --depth 1 --branch yaml-cpp-0.6.0 https://github.com/jbeder/yaml-cpp.git && \
+    cd yaml-cpp && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DYAML_BUILD_SHARED_LIBS=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON .. && \
+    make && \
+    make install
+# RUN ls /usr/lib/cmake/yaml-cpp
+ENV LD_LIBRARY_PATH /usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
+ENV CMAKE_PREFIX_PATH /usr/lib/cmake:$CMAKE_PREFIX_PATH
+
+
+
+# setup webots_ros2_driver
+# To run webots on local host need to set ENV WEBOTS_SHARED_FOLDER ~/shared:/root/shared and mount shared folder
+RUN apt install -y iproute2
+# 
+# install webots_ros2_driver from distributed pagkage
+# https://docs.ros.org/en/iron/Tutorials/Advanced/Simulators/Webots/Installation-MacOS.html
+RUN apt install -y ros-humble-webots-ros2
+# 
+# install webots_ros2_driver from sources (with fix for mac to connect to host webots_local_server)
+# 
+# WORKDIR /root/webots_ros2_driver_ws
+# 
+# RUN git clone --recurse-submodules --depth 1 --branch docker https://github.com/marcorobol/webots_ros2.git ~/webots_ros2_driver_ws/src/webots_ros2
+# 
+# RUN rosdep update
+# 
+# RUN NUM_CORES=$(nproc) && \
+#     export MAKEFLAGS="-j$NUM_CORES" && \
+#     export AMENT_BUILD_GRADLE_ARGS="-j$NUM_CORES" && \
+#     export AMENT_BUILD_MAKE_ARGS="-j$NUM_CORES" && \
+#     rosdep install -y -r -q --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}
+# 
+# RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+#     NUM_CORES=$(nproc) && \
+#     export MAKEFLAGS="-j$NUM_CORES" && \
+#     export AMENT_BUILD_GRADLE_ARGS="-j$NUM_CORES" && \
+#     export AMENT_BUILD_MAKE_ARGS="-j$NUM_CORES" && \
+#     colcon build --symlink-install
+# 
+# # source entrypoint setup
+# RUN sed --in-place --expression \
+#       '$isource "/root/webots_ros2_driver_ws/install/setup.bash"' \
+#       /ros_entrypoint.sh
+
+
+# install behaviortree_cpp_v3 https://github.com/BehaviorTree/BehaviorTree.CPP/tree/3.0.0
+RUN apt-get install -y libzmq3-dev libdw-dev
+RUN apt-get install -y ros-$ROS_DISTRO-behaviortree-cpp
+
+RUN apt-get update && \
+    apt-get install -y -qq ros-humble-popf
+
+# install plansys2
+WORKDIR /root/plansys2_ws
+# RUN mkdir -p /root/plansys2_ws/src
+# RUN git clone https://github.com/RTI-BDI/ros2_planning_system.git ~/plansys2_ws/src
+# COPY ./src/ros2_planning_system /root/plansys2_ws/src/ros2_planning_system
+# RUN git clone https://github.com/IntelligentRoboticsLabs/ros2_planning_system.git ~/plansys2_ws/src && \
+#     git clone https://github.com/IntelligentRoboticsLabs/ros2_planning_system_examples.git ~/plansys2_ws/src
+# RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+#     colcon build --symlink-install
+# RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+#     rosdep install -y -r -q --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}
+# RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+#     colcon build --symlink-install
+# # source entrypoint setup
+# RUN sed --in-place --expression \
+#       '$isource "/root/plansys2_ws/install/setup.bash"' \
+#       /ros_entrypoint.sh
+
+
+
+WORKDIR /root/ros2bdi_ws
+
+CMD ["/bin/bash", "-c", \
+    "source /opt/ros/humble/setup.bash && source /root/plansys2_ws/install/setup.bash"]
+
+
+
+# build
+# sudo docker build --platform=linux/amd64 --rm  --tag ros2bdi-build-env -f DockerfileBuildEnv .
+
+# run
+# docker run --platform=linux/amd64 -v ./ros2bdi_ws:/root/ros2bdi_ws -v ./plansys2_ws:/root/plansys2_ws -v ./tmp:/root/tmp --rm -it ros2bdi-build-env bash
+
+# if:
+# > ros2 run popf popf /tmp/carrier_a/domain.pddl /tmp/carrier-a/problem.pddl
+# Package 'popf' not found
+# try to manually install popf:
+# > apt-get update && apt-get install -y -qq ros-humble-popf
