@@ -4,3 +4,6 @@
 [submodule "plansys2_ws/src/ros2_planning_system"]
 	path = plansys2_ws/src/ros2_planning_system
 	url = https://github.com/RTI-BDI/ros2_planning_system.git
+[submodule "webots_ros2_ws/src/webots_ros2"]
+	path = webots_ros2_ws/src/webots_ros2
+	url = https://github.com/marcorobol/webots_ros2.git
