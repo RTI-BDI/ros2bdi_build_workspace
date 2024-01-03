@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-export WEBOTS_HOME=/Applications/Webots.app
-
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
-python3 $DIR/local_simulation_server.py

@@ -14,15 +14,12 @@ services:
     volumes:
       - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
-      - /Users/Shared/shared:/root/shared/ # mount the shared folder to save the Webots world
       - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+      - /Users/Shared/shared:/root/shared/ # mount the shared folder to save the Webots world
     environment:
-      - WEBOTS_SHARED_FOLDER=/Users/Shared/shared:/root/shared
+      - WEBOTS_SHARED_FOLDER=/Users/Shared/shared:/root/shared # ABSOLUTE path of the previously mounted volume
       - RCUTILS_LOGGING_USE_STDOUT:1
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
-    depends_on:
-      - forwarder-2000
-      - forwarder-1234
     network_mode: bridge
 
   # docker run --platform=linux/amd64 --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
@@ -105,18 +102,5 @@ services:
       # - carrier_c
     network_mode: bridge
 
-  # docker run --rm -d --name=forwarder-container2000 --network=host alpine/socat TCP-LISTEN:2000,fork TCP:host.docker.internal:2000
-  forwarder-2000:
-    image: alpine/socat
-    command: TCP-LISTEN:2000,fork TCP:host.docker.internal:2000
-    container_name: forwarder-container2000
-    network_mode: host
-
-  # docker run --rm -d --name=forwarder-container1234 --network=host alpine/socat TCP-LISTEN:1234,fork TCP:host.docker.internal:1234
-  forwarder-1234:
-    image: alpine/socat
-    command: TCP-LISTEN:1234,fork TCP:host.docker.internal:1234
-    container_name: forwarder-container1234
-    network_mode: host
 
 
