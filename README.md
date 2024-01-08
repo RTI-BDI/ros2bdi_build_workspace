@@ -39,7 +39,7 @@ Here are the basics steps to getting started:
 5. Configure Webots to run locally:
     
     We will run webots on host machine (while ros2bdi and plansys2 are running on docker).
-    To do so, Webots 2023_b needs to be installed and webots local simulation python server whould be listening on port 2000:
+    To do so, Webots 2023_b needs to be installed and webots local simulation python server should be listening on port 2000:
 
     On LINUX
     ```console
@@ -47,18 +47,17 @@ Here are the basics steps to getting started:
     python3 scripts/local_simulation_server.py
     ```
 
-    On MAC, because docker is executed as a VM, network is isolated. So we need to forward request from docker VM to host machine. Use scripts for simplicity:
+    On macOS
     ```console
-    scripts/run_on_mac.sh
+    export WEBOTS_HOME=/Applications/Webots.app
+    python3 scripts/local_simulation_server.py
     ```
 
-    When on SSH, forward requests on local machine on where local simulation python server is listening for connections. Use scripts for simplicity:
-    ```console
-    scripts/run_on_ssh/start.sh
-    ```
-    ```console
-    scripts/run_on_ssh/stop.sh
-    ```
+5. Network configuration (Only for macOS):
+
+    On MAC, because docker is executed as a VM, network is isolated. So we need to forward request from docker VM to host machine. The forward proxy services 2000 and 1234 allow the local simulation server to connect to the Webots simulator
+    On Linux and Windows, these two proxy services are not needed.
+    In `scripts/forward_service_on_mac/` run `start.sh` and `stop.sh` scripts to start/stop services:
 
 6. Manually run nodes:
 
