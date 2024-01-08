@@ -82,14 +82,14 @@ RUN apt install -y ros-humble-webots-ros2
 
 # install behaviortree_cpp_v3 https://github.com/BehaviorTree/BehaviorTree.CPP/tree/3.0.0
 RUN apt-get install -y libzmq3-dev libdw-dev
-RUN apt-get install -y ros-$ROS_DISTRO-behaviortree-cpp
+RUN apt-get install -y ros-$ROS_DISTRO-behaviortree-cpp-v3
 
 RUN apt-get update && \
     apt-get install -y -qq ros-humble-popf
 
 
 
-WORKDIR /root/ros2bdi_ws
+WORKDIR /root
 
 CMD ["/bin/bash", "-c", \
     "source /opt/ros/humble/setup.bash && source /root/plansys2_ws/install/setup.bash"]
