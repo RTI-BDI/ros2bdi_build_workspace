@@ -78,25 +78,14 @@ RUN apt install -y ros-humble-webots-ros2
 #       /ros_entrypoint.sh
 
 
+# install plansys2
+
 # install behaviortree_cpp_v3 https://github.com/BehaviorTree/BehaviorTree.CPP/tree/3.0.0
 RUN apt-get install -y libzmq3-dev libdw-dev
 RUN apt-get install -y ros-$ROS_DISTRO-behaviortree-cpp
 
 RUN apt-get update && \
     apt-get install -y -qq ros-humble-popf
-
-# install plansys2
-WORKDIR /root/plansys2_ws
-RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    colcon build --symlink-install
-RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    rosdep install -y -r -q --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}
-RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    colcon build --symlink-install
-# source entrypoint setup
-RUN sed --in-place --expression \
-      '$isource "/root/plansys2_ws/install/setup.bash"' \
-      /ros_entrypoint.sh
 
 
 

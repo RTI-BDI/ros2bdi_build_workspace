@@ -2,6 +2,11 @@ FROM ros2bdi-build-env
 
 # source entrypoint setup
 RUN sed --in-place --expression \
+      '$isource "/root/plansys2_ws/install/setup.bash"' \
+      /ros_entrypoint.sh
+
+# source entrypoint setup
+RUN sed --in-place --expression \
       '$isource "/root/ros2bdi_ws/install/setup.bash"' \
       /ros_entrypoint.sh
 
