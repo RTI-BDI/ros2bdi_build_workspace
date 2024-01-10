@@ -23,3 +23,10 @@ To run ROS on SSH and Webots locally, it is needed to forward requests to the lo
     sudo umount user@host:/Users/Shared/shared
     ```
 
+- Alternatively, use Docker to mount sshfs:
+    
+    > https://lovethepenguin.com/docker-swarm-and-remote-filesystems-an-ssh-fs-example-ae4795e7e199
+    
+    or
+
+    > https://hub.docker.com/r/pschmitt/sshfs

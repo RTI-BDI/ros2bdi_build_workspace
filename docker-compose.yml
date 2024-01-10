@@ -1,4 +1,4 @@
-version: '1'
+version: '3'
 
 services:
 
@@ -20,17 +20,23 @@ services:
       - WEBOTS_SHARED_FOLDER=/Users/Shared/shared:/root/shared # ABSOLUTE path of the previously mounted volume
       - RCUTILS_LOGGING_USE_STDOUT:1
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
     network_mode: bridge
 
   # docker run --platform=linux/amd64 --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
-  carrier_a:
+  agents:
     # build:
     #     context: .
     #     dockerfile: Dockerfile-local-webots
     image: ros2bdi-run-env
-    command: ros2 launch ros2_bdi_on_webots carrier_a.launch.py
+    command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_a.launch.py && \
+                             sleep 15 & ros2 launch ros2_bdi_on_webots carrier_b.launch.py && \
+                             sleep 15 & ros2 launch ros2_bdi_on_webots carrier_c.launch.py && \
+                             sleep 15 & ros2 launch ros2_bdi_on_webots gripper_a.launch.py  \
+                            "]
+    shm_size: '1g'
     platform: linux/amd64
-    container_name: carrier_a
+    container_name: agents
     volumes:
       - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
@@ -38,9 +44,32 @@ services:
     environment:
       - RCUTILS_LOGGING_USE_STDOUT:1
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
     depends_on:
       - blocks_world
     network_mode: bridge
+
+  # # docker run --platform=linux/amd64 --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
+  # carrier_a:
+  #   # build:
+  #   #     context: .
+  #   #     dockerfile: Dockerfile-local-webots
+  #   image: ros2bdi-run-env
+  #   command: ros2 launch ros2_bdi_on_webots carrier_a.launch.py
+  #   shm_size: '1g'
+  #   platform: linux/amd64
+  #   container_name: carrier_a
+  #   volumes:
+  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
+  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+  #   environment:
+  #     - RCUTILS_LOGGING_USE_STDOUT:1
+  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
+  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+  #   depends_on:
+  #     - blocks_world
+  #   network_mode: bridge
 
   # # docker run --platform=linux/amd64 --rm -it ros2bdi-local-webots ros2 launch ros2_bdi_on_webots carrier_b.launch.py
   # carrier_b:
@@ -52,11 +81,13 @@ services:
   #   platform: linux/amd64
   #   container_name: carrier_b
   #   volumes:
-  #     - .:/root/ros2bdi_ws # mount the ROS2-BDI src folder
+  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
   #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
   #   environment:
   #     - RCUTILS_LOGGING_USE_STDOUT:1
   #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
+  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
   #   depends_on:
   #     - blocks_world
   #   network_mode: bridge
@@ -71,36 +102,39 @@ services:
   #   platform: linux/amd64
   #   container_name: carrier_c
   #   volumes:
-  #     - .:/root/ros2bdi_ws # mount the ROS2-BDI src folder
+  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
   #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
   #   environment:
   #     - RCUTILS_LOGGING_USE_STDOUT:1
   #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
+  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
   #   depends_on:
   #     - blocks_world
   #   network_mode: bridge
   
   # # docker run --platform=linux/amd64 --rm -it ros2bdi-local-webots ros2 launch ros2_bdi_on_webots gripper_a.launch.py
-  gripper_a:
-    # build:
-    #     context: .
-    #     dockerfile: Dockerfile-local-webots
-    image: ros2bdi-local-webots
-    command: ros2 launch ros2_bdi_on_webots gripper_a.launch.py
-    platform: linux/amd64
-    container_name: gripper_a
-    volumes:
-      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
-      - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
-      - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
-    environment:
-      - RCUTILS_LOGGING_USE_STDOUT:1
-      - RCUTILS_LOGGING_BUFFERED_STREAM:0
-    depends_on:
-      - carrier_a
-      # - carrier_b
-      # - carrier_c
-    network_mode: bridge
+  # gripper_a:
+  #   # build:
+  #   #     context: .
+  #   #     dockerfile: Dockerfile-local-webots
+  #   image: ros2bdi-local-webots
+  #   command: ros2 launch ros2_bdi_on_webots gripper_a.launch.py
+  #   platform: linux/amd64
+  #   container_name: gripper_a
+  #   volumes:
+  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
+  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+  #   environment:
+  #     - RCUTILS_LOGGING_USE_STDOUT:1
+  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
+  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+  #   depends_on:
+  #     - carrier_a
+  #     - carrier_b
+  #     - carrier_c
+  #   network_mode: bridge
 
 
 

@@ -13,9 +13,10 @@ RUN apt-get install -y vim gdb terminator screen
 
 # install ros package
 RUN apt-get update && apt-get install -y \
-      ros-${ROS_DISTRO}-desktop \
+      ros-${ROS_DISTRO}-ros-base \
       ros-${ROS_DISTRO}-demo-nodes-cpp \
-      ros-${ROS_DISTRO}-demo-nodes-py
+      ros-${ROS_DISTRO}-demo-nodes-py \
+      ros-dev-tools
 
 # RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /root/.bashrc
 
@@ -81,18 +82,33 @@ RUN apt install -y ros-humble-webots-ros2
 # install plansys2
 
 # install behaviortree_cpp_v3 https://github.com/BehaviorTree/BehaviorTree.CPP/tree/3.0.0
-RUN apt-get install -y libzmq3-dev libdw-dev
-RUN apt-get install -y ros-$ROS_DISTRO-behaviortree-cpp-v3
-
-RUN apt-get update && \
-    apt-get install -y -qq ros-humble-popf
+RUN apt-get update && apt-get install -y -qq \
+    libzmq3-dev \
+    libdw-dev \
+    ros-$ROS_DISTRO-behaviortree-cpp-v3 \
+    ros-$ROS_DISTRO-performance-test-fixture \
+    ros-$ROS_DISTRO-test-interface-files \
+    ros-humble-popf
 
 
 
 WORKDIR /root
 
-CMD ["/bin/bash", "-c", \
-    "source /opt/ros/humble/setup.bash && source /root/plansys2_ws/install/setup.bash"]
+
+
+RUN sed --in-place --expression \
+      '$isource "/root/plansys2_ws/install/setup.bash"' \
+      /ros_entrypoint.sh
+
+RUN sed --in-place --expression \
+      '$isource "/root/ros2bdi_ws/install/setup.bash"' \
+      /ros_entrypoint.sh
+
+
+
+ENTRYPOINT ["bash", "-c", "source /root/.bashrc; source /ros_entrypoint.sh", ""]
+
+CMD bash
 
 
 
