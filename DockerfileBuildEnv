@@ -108,11 +108,15 @@ RUN echo "source /ros_entrypoint.sh" >> /root/.bashrc
 
 RUN echo "set +e" >> /root/.bashrc
 
-RUN echo "echo Welcome to ros2bdi-build-env bash" >> /root/.bashrc
+RUN echo "echo Welcome to ros2bdi-build-env /ros_entrypoint.sh" >> /ros_entrypoint.sh
+RUN echo "echo Welcome to ros2bdi-build-env ~/.bashrc" >> /root/.bashrc
 RUN echo "echo" >> /root/.bashrc
 
+RUN echo "source ~/.bashrc" >> ~/.bash_profile
+RUN echo "source ~/.bashrc" >> ~/.profile
 
-ENTRYPOINT ["bash", "-c", "source /root/.bashrc; source /ros_entrypoint.sh", ""]
+
+ENTRYPOINT ["bash", "-c", "source /ros_entrypoint.sh", ""]
 
 CMD bash
 

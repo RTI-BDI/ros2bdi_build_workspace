@@ -2,7 +2,10 @@
 
 .DEFAULT_GOAL := help
 
+
+
 args = $(filter-out $@,$(MAKECMDGOALS))
+args_CMD = $(if $(strip $(args)),$(args),$(CMD))
 
 BUILD = docker build \
 	--platform=linux/amd64 \
@@ -22,12 +25,12 @@ RUN = docker run \
 	--rm -it \
 	--name ros2bdi-build-env \
 	ros2bdi-build-env \
-	$(args) $(CMD)
+	$(args_CMD)
 
 EXEC = docker exec \
 	-it \
 	ros2bdi-build-env \
-	bash --login -c "$(args) $(CMD)"
+	$(if $(strip $(args_CMD)),bash -c "source /ros_entrypoint.sh; ${args_CMD}",bash)
 
 IF_CONTAINER_RUNS=$(shell docker container inspect -f '{{.State.Running}}' ros2bdi-build-env 2>/dev/null)
 
