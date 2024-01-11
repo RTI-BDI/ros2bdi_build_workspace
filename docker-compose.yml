@@ -2,12 +2,12 @@ version: '3'
 
 services:
 
-  # docker run --platform=linux/amd64 -v .:/root/ros2bdi_ws/src/ROS2-BDI -v ~/shared:/root/shared/ -e "WEBOTS_SHARED_FOLDER=~/shared:/root/shared" --rm -it ros2bdi-local-webots ros2 launch webots_ros2_simulations blocks_world.launch.py
+  # docker run --platform=linux/amd64 -v .:/root/ros2bdi_ws/src/ROS2-BDI -v ~/shared:/root/shared/ -e "WEBOTS_SHARED_FOLDER=~/shared:/root/shared" --rm -it ros2bdi-build-env ros2 launch webots_ros2_simulations blocks_world.launch.py
   blocks_world:
     # build:
     #     context: .
-    #     dockerfile: Dockerfile-local-webots
-    image: ros2bdi-run-env
+    #     dockerfile: DockerfileBuildEnv
+    image: ros2bdi-build-env
     command: ros2 launch webots_ros2_simulations blocks_world.launch.py
     platform: linux/amd64
     container_name: blocks_world
@@ -22,21 +22,62 @@ services:
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
     network_mode: bridge
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "source /ros_entrypoint.sh; timeout -s SIGINT 5s ros2 service call /my_gripper_a_driver/get_parameters rcl_interfaces/srv/GetParameters || exit 1"]
+      interval: 6s
+      timeout: 30s
+      retries: 2
+      start_period: 5s
 
-  # docker run --platform=linux/amd64 --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
-  agents:
+  # # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
+  # agents:
+  #   # build:
+  #   #     context: .
+  #   #     dockerfile: DockerfileBuildEnv
+  #   image: ros2bdi-build-env
+  #   command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_a.launch.py && \
+  #                            sleep 15 & ros2 launch ros2_bdi_on_webots carrier_b.launch.py && \
+  #                            sleep 15 & ros2 launch ros2_bdi_on_webots carrier_c.launch.py && \
+  #                            sleep 15 & ros2 launch ros2_bdi_on_webots gripper_a.launch.py  \
+  #                           "]
+  #   shm_size: '1g'
+  #   platform: linux/amd64
+  #   container_name: agents
+  #   volumes:
+  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
+  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+  #   environment:
+  #     - RCUTILS_LOGGING_USE_STDOUT:1
+  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
+  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+  #   depends_on:
+  #     - blocks_world
+  #   network_mode: bridge
+
+
+  delay_5:
+    image: alpine
+    command: /bin/sh -c "sleep 5"
+  delay_15:
+    image: alpine
+    command: /bin/sh -c "sleep 15"
+  delay_25:
+    image: alpine
+    command: /bin/sh -c "sleep 25"
+  delay_35:
+    image: alpine
+    command: /bin/sh -c "sleep 35"
+  
+  # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots gripper_a.launch.py
+  gripper_a:
     # build:
     #     context: .
-    #     dockerfile: Dockerfile-local-webots
-    image: ros2bdi-run-env
-    command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_a.launch.py && \
-                             sleep 15 & ros2 launch ros2_bdi_on_webots carrier_b.launch.py && \
-                             sleep 15 & ros2 launch ros2_bdi_on_webots carrier_c.launch.py && \
-                             sleep 15 & ros2 launch ros2_bdi_on_webots gripper_a.launch.py  \
-                            "]
-    shm_size: '1g'
+    #     dockerfile: DockerfileBuildEnv
+    image: ros2bdi-build-env
+    command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots gripper_a.launch.py"]
     platform: linux/amd64
-    container_name: agents
+    container_name: gripper_a
     volumes:
       - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
@@ -46,95 +87,104 @@ services:
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
     depends_on:
-      - blocks_world
+      blocks_world:
+        condition: service_healthy
     network_mode: bridge
-
-  # # docker run --platform=linux/amd64 --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
-  # carrier_a:
-  #   # build:
-  #   #     context: .
-  #   #     dockerfile: Dockerfile-local-webots
-  #   image: ros2bdi-run-env
-  #   command: ros2 launch ros2_bdi_on_webots carrier_a.launch.py
-  #   shm_size: '1g'
-  #   platform: linux/amd64
-  #   container_name: carrier_a
-  #   volumes:
-  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
-  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
-  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
-  #   environment:
-  #     - RCUTILS_LOGGING_USE_STDOUT:1
-  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
-  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-  #   depends_on:
-  #     - blocks_world
-  #   network_mode: bridge
-
-  # # docker run --platform=linux/amd64 --rm -it ros2bdi-local-webots ros2 launch ros2_bdi_on_webots carrier_b.launch.py
-  # carrier_b:
-  #   # build:
-  #   #     context: .
-  #   #     dockerfile: Dockerfile-local-webots
-  #   image: ros2bdi-local-webots
-  #   command: ros2 launch ros2_bdi_on_webots carrier_b.launch.py
-  #   platform: linux/amd64
-  #   container_name: carrier_b
-  #   volumes:
-  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
-  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
-  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
-  #   environment:
-  #     - RCUTILS_LOGGING_USE_STDOUT:1
-  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
-  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-  #   depends_on:
-  #     - blocks_world
-  #   network_mode: bridge
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "source /ros_entrypoint.sh; timeout -s SIGINT 5s ros2 service call /gripper_a/executor/get_state lifecycle_msgs/srv/GetState || exit 1"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
   
-  # # docker run --platform=linux/amd64 --rm -it ros2bdi-local-webots ros2 launch ros2_bdi_on_webots carrier_c.launch.py
-  # carrier_c:
-  #   # build:
-  #   #     context: .
-  #   #     dockerfile: Dockerfile-local-webots
-  #   image: ros2bdi-local-webots
-  #   command: ros2 launch ros2_bdi_on_webots carrier_c.launch.py
-  #   platform: linux/amd64
-  #   container_name: carrier_c
-  #   volumes:
-  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
-  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
-  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
-  #   environment:
-  #     - RCUTILS_LOGGING_USE_STDOUT:1
-  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
-  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-  #   depends_on:
-  #     - blocks_world
-  #   network_mode: bridge
+  # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
+  carrier_a:
+    # build:
+    #     context: .
+    #     dockerfile: DockerfileBuildEnv
+    image: ros2bdi-build-env
+    command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_a.launch.py"]
+    shm_size: '1g'
+    platform: linux/amd64
+    container_name: carrier_a
+    volumes:
+      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+      - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
+      - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+    environment:
+      - RCUTILS_LOGGING_USE_STDOUT:1
+      - RCUTILS_LOGGING_BUFFERED_STREAM:0
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+    depends_on:
+      gripper_a:
+        condition: service_healthy
+    network_mode: bridge
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "source /ros_entrypoint.sh; timeout -s SIGINT 5s ros2 service call /carrier_a/executor/get_state lifecycle_msgs/srv/GetState || exit 1"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+
   
-  # # docker run --platform=linux/amd64 --rm -it ros2bdi-local-webots ros2 launch ros2_bdi_on_webots gripper_a.launch.py
-  # gripper_a:
-  #   # build:
-  #   #     context: .
-  #   #     dockerfile: Dockerfile-local-webots
-  #   image: ros2bdi-local-webots
-  #   command: ros2 launch ros2_bdi_on_webots gripper_a.launch.py
-  #   platform: linux/amd64
-  #   container_name: gripper_a
-  #   volumes:
-  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
-  #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
-  #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
-  #   environment:
-  #     - RCUTILS_LOGGING_USE_STDOUT:1
-  #     - RCUTILS_LOGGING_BUFFERED_STREAM:0
-  #     - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-  #   depends_on:
-  #     - carrier_a
-  #     - carrier_b
-  #     - carrier_c
-  #   network_mode: bridge
+  # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_b.launch.py
+  carrier_b:
+    # build:
+    #     context: .
+    #     dockerfile: DockerfileBuildEnv
+    image: ros2bdi-build-env
+    command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_b.launch.py"]
+    platform: linux/amd64
+    container_name: carrier_b
+    volumes:
+      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+      - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
+      - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+    environment:
+      - RCUTILS_LOGGING_USE_STDOUT:1
+      - RCUTILS_LOGGING_BUFFERED_STREAM:0
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+    depends_on:
+      carrier_a:
+        condition: service_healthy
+    network_mode: bridge
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "source /ros_entrypoint.sh; timeout -s SIGINT 5s ros2 service call /carrier_b/executor/get_state lifecycle_msgs/srv/GetState || exit 1"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+
+  
+  # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_c.launch.py
+  carrier_c:
+    # build:
+    #     context: .
+    #     dockerfile: DockerfileBuildEnv
+    image: ros2bdi-build-env
+    command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_c.launch.py"]
+    platform: linux/amd64
+    container_name: carrier_c
+    volumes:
+      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
+      - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
+      - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
+    environment:
+      - RCUTILS_LOGGING_USE_STDOUT:1
+      - RCUTILS_LOGGING_BUFFERED_STREAM:0
+      - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+    depends_on:
+      carrier_b:
+        condition: service_healthy
+      delay_35:
+        condition: service_completed_successfully
+    network_mode: bridge
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "source /ros_entrypoint.sh; timeout -s SIGINT 5s ros2 service call /carrier_c/add_desire_srv ros2_bdi_interfaces/srv/UpdDesireSet || exit 1"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
 
 
 

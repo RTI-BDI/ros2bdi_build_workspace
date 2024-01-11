@@ -104,6 +104,8 @@ RUN sed --in-place --expression \
       '$isource "/root/ros2bdi_ws/install/setup.bash"' \
       /ros_entrypoint.sh
 
+RUN echo "source /ros_entrypoint.sh" >> /root/.bashrc
+
 
 
 ENTRYPOINT ["bash", "-c", "source /root/.bashrc; source /ros_entrypoint.sh", ""]
