@@ -27,8 +27,7 @@ RUN = docker run \
 EXEC = docker exec \
 	-it \
 	ros2bdi-build-env \
-	bash -c "source /root/.bashrc; source /ros_entrypoint.sh; $(args) $(CMD)"
-
+	bash --login -c "$(args) $(CMD)"
 
 IF_CONTAINER_RUNS=$(shell docker container inspect -f '{{.State.Running}}' ros2bdi-build-env 2>/dev/null)
 

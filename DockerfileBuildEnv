@@ -106,6 +106,10 @@ RUN sed --in-place --expression \
 
 RUN echo "source /ros_entrypoint.sh" >> /root/.bashrc
 
+RUN echo "set +e" >> /root/.bashrc
+
+RUN echo "echo Welcome to ros2bdi-build-env bash" >> /root/.bashrc
+RUN echo "echo" >> /root/.bashrc
 
 
 ENTRYPOINT ["bash", "-c", "source /root/.bashrc; source /ros_entrypoint.sh", ""]
