@@ -2,11 +2,12 @@ version: '3'
 
 services:
 
+  # sudo docker build --platform=linux/amd64 --rm  --tag ros2bdi-build-env -f DockerfileBuildEnv .
   # docker run --platform=linux/amd64 -v .:/root/ros2bdi_ws/src/ROS2-BDI -v ~/shared:/root/shared/ -e "WEBOTS_SHARED_FOLDER=~/shared:/root/shared" --rm -it ros2bdi-build-env ros2 launch webots_ros2_simulations blocks_world.launch.py
   blocks_world:
-    # build:
-    #     context: .
-    #     dockerfile: DockerfileBuildEnv
+    build:
+      dockerfile: DockerfileBuildEnv
+      context: .
     image: ros2bdi-build-env
     command: ros2 launch webots_ros2_simulations blocks_world.launch.py
     platform: linux/amd64
@@ -58,9 +59,9 @@ services:
   
   # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots gripper_a.launch.py
   gripper_a:
-    # build:
-    #     context: .
-    #     dockerfile: DockerfileBuildEnv
+    build:
+      dockerfile: DockerfileBuildEnv
+      context: .
     image: ros2bdi-build-env
     command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots gripper_a.launch.py"]
     platform: linux/amd64
@@ -86,9 +87,9 @@ services:
   
   # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
   carrier_a:
-    # build:
-    #     context: .
-    #     dockerfile: DockerfileBuildEnv
+    build:
+      dockerfile: DockerfileBuildEnv
+      context: .
     image: ros2bdi-build-env
     command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_a.launch.py"]
     shm_size: '1g'
@@ -116,9 +117,9 @@ services:
   
   # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_b.launch.py
   carrier_b:
-    # build:
-    #     context: .
-    #     dockerfile: DockerfileBuildEnv
+    build:
+      dockerfile: DockerfileBuildEnv
+      context: .
     image: ros2bdi-build-env
     command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_b.launch.py"]
     platform: linux/amd64
@@ -148,9 +149,9 @@ services:
   
   # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_c.launch.py
   carrier_c:
-    # build:
-    #     context: .
-    #     dockerfile: DockerfileBuildEnv
+    build:
+      dockerfile: DockerfileBuildEnv
+      context: .
     image: ros2bdi-build-env
     command: ["bash", "-c", "ros2 launch ros2_bdi_on_webots carrier_c.launch.py"]
     platform: linux/amd64
