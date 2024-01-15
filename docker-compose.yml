@@ -55,19 +55,6 @@ services:
   #     - blocks_world
   #   network_mode: bridge
 
-
-  delay_5:
-    image: alpine
-    command: /bin/sh -c "sleep 5"
-  delay_15:
-    image: alpine
-    command: /bin/sh -c "sleep 15"
-  delay_25:
-    image: alpine
-    command: /bin/sh -c "sleep 25"
-  delay_35:
-    image: alpine
-    command: /bin/sh -c "sleep 35"
   
   # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots gripper_a.launch.py
   gripper_a:
@@ -145,7 +132,7 @@ services:
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
     depends_on:
-      carrier_a:
+      carrier_c:
         condition: service_healthy
     network_mode: bridge
     healthcheck:
@@ -155,6 +142,9 @@ services:
       retries: 5
       start_period: 10s
 
+  # delay_35:
+  #   image: alpine
+  #   command: /bin/sh -c "sleep 35"
   
   # docker run --platform=linux/amd64 --rm -it ros2bdi-build-env ros2 launch ros2_bdi_on_webots carrier_c.launch.py
   carrier_c:
@@ -174,10 +164,10 @@ services:
       - RCUTILS_LOGGING_BUFFERED_STREAM:0
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
     depends_on:
-      carrier_b:
+      carrier_a:
         condition: service_healthy
-      delay_35:
-        condition: service_completed_successfully
+      # delay_35:
+      #   condition: service_completed_successfully
     network_mode: bridge
     healthcheck:
       test: ["CMD", "/bin/bash", "-c", "source /ros_entrypoint.sh; timeout -s SIGINT 5s ros2 service call /carrier_c/add_desire_srv ros2_bdi_interfaces/srv/UpdDesireSet || exit 1"]
