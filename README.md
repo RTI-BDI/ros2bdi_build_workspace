@@ -17,23 +17,18 @@ Here are the basics steps to getting started:
 
 1. Build docker image for developing environment:
     ```console
-    sudo docker build --platform=linux/amd64 --rm  --tag ros2bdi-build-env -f DockerfileBuildEnv .
+    sudo make docker-buid
     ```
 
 2. Run developing environment:
     ```console
-    docker run --platform=linux/amd64 -v ./ros2bdi_ws:/root/ros2bdi_ws -v ./plansys2_ws:/root/plansys2_ws -v ./tmp:/root/tmp --rm -it ros2bdi-build-env bash
+    make docker-login
     ```
 
 3. Build PlanSys2 and ROS2BDI within docker:
     ```console
     root@ros2bdi-build-env: ~/plansys2_ws ./build.sh
     root@ros2bdi-build-env: ~/ros2bdi_ws ./build.sh
-    ```
-
-4. Build docker image for running environment
-    ```console
-    sudo docker build --platform=linux/amd64 --rm  --tag ros2bdi-run-env --file DockerfileRunEnv .
     ```
 
 5. Configure Webots to run locally:
@@ -43,44 +38,56 @@ Here are the basics steps to getting started:
 
     On LINUX
     ```console
-    export WEBOTS_HOME=/usr/local/webots
-    python3 scripts/local_simulation_server.py
+    make webots-linux
     ```
 
-    On macOS
+    On macOS, because docker is executed as a VM, network is isolated. So we need to forward request from docker VM to host machine. The forward proxy services 2000 and 1234 allow the local simulation server to connect to the Webots simulator. On Linux and Windows, these two proxy services are not needed.
     ```console
-    export WEBOTS_HOME=/Applications/Webots.app
-    python3 scripts/local_simulation_server.py
+    make webots-mac
     ```
-
-5. Network configuration (Only for macOS):
-
-    On MAC, because docker is executed as a VM, network is isolated. So we need to forward request from docker VM to host machine. The forward proxy services 2000 and 1234 allow the local simulation server to connect to the Webots simulator
-    On Linux and Windows, these two proxy services are not needed.
-    In `scripts/forward_service_on_mac/` run `start.sh` and `stop.sh` scripts to start/stop services:
 
 6. Manually run nodes:
 
-    world
+    Type `make` to get list of commands:
 
     ```console
-    docker run --platform=linux/amd64 -v .:/root/ros2bdi_ws -v /Users/Shared/shared:/root/shared -e "WEBOTS_SHARED_FOLDER=/Users/Shared/shared:/root/shared" --rm -it --name ros2bdi ros2bdi-run-env ros2 launch webots_ros2_simulations blocks_world.launch.py
+    $ make
+    Webots executes natively on host machine, be sure to run webots server.
+    On mac, docker runs on VM, be sure to run forwarding services from VM to host network. Forwarding services NOT running
+
+    docker-login                   Login to the container. If the container is already running, login into existing one.
+    docker-build                   Build the docker ros2bdi-build-env image.
+    run-world                      Login and run world.
+    run-carrier_a                  Login and run carrier_a.
+    run-carrier_b                  Login and run carrier_b.
+    run-carrier_c                  Login and run carrier_c.
+    run-gripper_a                  Login and run gripper_a.
+    run-all                        Login and run all.
+    webots-mac                     Run local simulation server for Webots on mac.
+    webots-linux                   Run local simulation server for Webots on linux.
     ```
 
-    agents
-
+    For example, to run world:
     ```console
-    docker run --platform=linux/amd64 -v ./tmp:/tmp --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_a.launch.py
+    make run-world
+    ```
     
-    docker run --platform=linux/amd64 -v ./tmp:/tmp --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_b.launch.py
-    
-    docker run --platform=linux/amd64 -v ./tmp:/tmp --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots carrier_c.launch.py
-    
-    docker run --platform=linux/amd64 -v ./tmp:/tmp --rm -it ros2bdi-run-env ros2 launch ros2_bdi_on_webots gripper_a.launch.py
+    Or specify the command to run in the docker after `make doker-login`:
+    ```console
+    make doker-login ros2 launch webots_ros2_simulations blocks_world.launch.py
     ```
 
-6. Alternatively, with docker compose
+6. Alternatively, with ***docker compose***:
 
     ```console
     sudo docker compose up
+    ```
+    
+    Or run selected services one-by-one manually:
+    ```console
+    sudo docker compose blocks_world
+    sudo docker compose carrier_a
+    sudo docker compose carrier_b
+    sudo docker compose carrier_c
+    sudo docker compose gripper_a
     ```
