@@ -117,7 +117,39 @@ run-all: ## Login and run all.
 
 
 
-.PHONY: forward-mac-start
+.PHONY: forward-stop
+forward-stop:
+	docker stop forwarder-container2000
+	docker stop forwarder-container1234
+
+
+
+.PHONY: forward-ssh
+forward-ssh: ## After ssh remote host, run this to start forwarding requests toward local host.
+	@IP=$$(echo $(SSH_CLIENT) | awk '{print $$1}'); export IP=$$IP; echo $$IP
+	@if [ "${FORWARD2000}" != "running" ]; then \
+		docker run \
+		--rm -d \
+		--name=forwarder-container2000 \
+		--network=host \
+		alpine/socat \
+		TCP-LISTEN:2000,fork \
+		TCP:${IP}:2000; \
+	fi
+
+	@if [ "${FORWARD1234}" != "running" ]; then \
+		docker run \
+		--rm -d \
+		--name=forwarder-container1234 \
+		--network=host \
+		alpine/socat \
+		TCP-LISTEN:1234,fork \
+		TCP:${IP}:1234; \
+	fi
+
+
+
+.PHONY: forward-mac
 forward-mac:
 	@if [ "${FORWARD2000}" != "running" ]; then \
 		docker run \
