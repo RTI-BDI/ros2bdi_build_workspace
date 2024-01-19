@@ -96,26 +96,36 @@ WORKDIR /root
 
 
 
-RUN sed --in-place --expression \
-      '$isource "/root/plansys2_ws/install/setup.bash"' \
-      /ros_entrypoint.sh
+# RUN echo "echo Welcome to ros2bdi-build-env ~/.bashrc" >> /root/.bashrc
+# RUN echo "source /ros_entrypoint.sh" >> /root/.bashrc
 
-RUN sed --in-place --expression \
-      '$isource "/root/ros2bdi_ws/install/setup.bash"' \
-      /ros_entrypoint.sh
+# RUN echo "echo Welcome to ros2bdi-build-env ~/.bash_profile" >> /root/.bash_profile
+# RUN echo "source /ros_entrypoint.sh" >> /root/.bash_profile
 
-RUN echo "source /ros_entrypoint.sh" >> /root/.bashrc
-
-RUN echo "set +e" >> /root/.bashrc
-
-RUN echo "echo Welcome to ros2bdi-build-env /ros_entrypoint.sh" >> /ros_entrypoint.sh
-RUN echo "echo Welcome to ros2bdi-build-env ~/.bashrc" >> /root/.bashrc
-RUN echo "echo" >> /root/.bashrc
-
-RUN echo "source ~/.bashrc" >> ~/.bash_profile
-RUN echo "source ~/.bashrc" >> ~/.profile
+# RUN echo "echo Welcome to ros2bdi-build-env ~/.profile" >> /root/.profile
+# RUN echo "source /ros_entrypoint.sh" >> ~/.profile
 
 
+
+# Remove "set -e" to continue even if following sourcing commands fail
+RUN sed -i '2d' /ros_entrypoint.sh
+# Welcome message
+RUN echo "echo Welcome to ros2bdi-build-env /ros_entrypoint.sh; echo;" >> /ros_entrypoint.sh
+# Source ros2 and plansys2
+RUN echo 'if [ -f /root/plansys2_ws/install/setup.bash ]; \
+            then source /root/plansys2_ws/install/setup.bash; \
+            fi' >> /ros_entrypoint.sh
+RUN echo 'if [ -f /root/ros2bdi_ws/install/setup.bash ]; \
+            then source /root/ros2bdi_ws/install/setup.bash; \
+            fi' >> /ros_entrypoint.sh
+# Remove exec "$@" at line 5
+RUN sed -i '5d' /ros_entrypoint.sh
+# Put exec "$@" at end
+RUN echo 'exec "$@"' >> /ros_entrypoint.sh
+
+
+
+# When running "docker run ros2 launch" plansys2 or ros2bdi packages would not be found
 ENTRYPOINT ["bash", "-c", "source /ros_entrypoint.sh", ""]
 
 CMD bash

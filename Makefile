@@ -30,7 +30,7 @@ RUN = docker run \
 EXEC = docker exec \
 	-it \
 	ros2bdi-build-env \
-	$(if $(strip $(args_CMD)),bash -c "source /ros_entrypoint.sh; ${args_CMD}",bash)
+	bash --init-file /ros_entrypoint.sh -i $(if $(strip $(args_CMD)),-c "$(args_CMD)",)
 
 IF_CONTAINER_RUNS=$(shell docker container inspect -f '{{.State.Running}}' ros2bdi-build-env 2>/dev/null)
 
