@@ -17,6 +17,7 @@ BUILD = docker build \
 RUN = docker run \
 	--shm-size=4g \
 	--platform=linux/amd64 \
+	-v ./javaff_ws:/root/javaff_ws \
 	-v ./ros2bdi_ws:/root/ros2bdi_ws \
 	-v ./plansys2_ws:/root/plansys2_ws \
 	-v ./tmp:/root/tmp \

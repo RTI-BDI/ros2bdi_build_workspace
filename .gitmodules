@@ -7,3 +7,9 @@
 [submodule "webots_ros2_ws/src/webots_ros2"]
 	path = webots_ros2_ws/src/webots_ros2
 	url = https://github.com/marcorobol/webots_ros2.git
+[submodule "JavaFF"]
+	path = JavaFF
+	url = https://github.com/RTI-BDI/JavaFF
+[submodule "javaff_ws/src/JavaFF"]
+	path = javaff_ws/src/JavaFF
+	url = https://github.com/RTI-BDI/JavaFF
