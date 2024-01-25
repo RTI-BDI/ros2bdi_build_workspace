@@ -92,6 +92,14 @@ RUN apt-get update && apt-get install -y -qq \
 
 
 
+# install Java
+
+RUN apt-get update && apt-get install -y -qq \
+    default-jdk
+ENV PATH="${PATH}:/usr/lib/jvm/java-11-openjdk-amd64/bin"
+
+
+
 WORKDIR /root
 
 
@@ -111,6 +119,10 @@ WORKDIR /root
 RUN sed -i '2d' /ros_entrypoint.sh
 # Welcome message
 RUN echo "echo Welcome to ros2bdi-build-env /ros_entrypoint.sh; echo;" >> /ros_entrypoint.sh
+# Source javaff
+RUN echo 'if [ -f /root/javaff_ws/install/setup.bash ]; \
+            then source /root/javaff_ws/install/setup.bash; \
+            fi' >> /ros_entrypoint.sh
 # Source ros2 and plansys2
 RUN echo 'if [ -f /root/plansys2_ws/install/setup.bash ]; \
             then source /root/plansys2_ws/install/setup.bash; \
