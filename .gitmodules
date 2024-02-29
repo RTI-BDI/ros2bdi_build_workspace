@@ -1,9 +1,6 @@
 [submodule "ros2bdi_ws/src/ROS2-BDI"]
 	path = ros2bdi_ws/src/ROS2-BDI
 	url = https://github.com/RTI-BDI/ROS2-BDI.git
-[submodule "webots_ros2_ws/src/webots_ros2"]
-	path = webots_ros2_ws/src/webots_ros2
-	url = https://github.com/marcorobol/webots_ros2.git
 [submodule "ros2bdi_ws/src/JavaFF"]
 	path = ros2bdi_ws/src/JavaFF
 	url = https://github.com/RTI-BDI/JavaFF.git

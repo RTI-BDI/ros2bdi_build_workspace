@@ -1,0 +1,3 @@
+string      pddl_problem
+---
+bool        handled

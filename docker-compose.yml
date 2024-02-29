@@ -13,7 +13,6 @@ services:
     platform: linux/amd64
     container_name: blocks_world
     volumes:
-      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
       - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
       - /Users/Shared/shared:/root/shared/ # mount the shared folder to save the Webots world
@@ -45,7 +44,6 @@ services:
   #   platform: linux/amd64
   #   container_name: agents
   #   volumes:
-  #     - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
   #     - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
   #     - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
   #   environment:
@@ -67,7 +65,6 @@ services:
     platform: linux/amd64
     container_name: gripper_a
     volumes:
-      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
       - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
     environment:
@@ -96,7 +93,6 @@ services:
     platform: linux/amd64
     container_name: carrier_a
     volumes:
-      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
       - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
     environment:
@@ -125,7 +121,6 @@ services:
     platform: linux/amd64
     container_name: carrier_b
     volumes:
-      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
       - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
     environment:
@@ -157,7 +152,6 @@ services:
     platform: linux/amd64
     container_name: carrier_c
     volumes:
-      - ./plansys2_ws:/root/plansys2_ws # mount the PlanSys2 ws folder
       - ./ros2bdi_ws:/root/ros2bdi_ws # mount the ROS2-BDI ws folder
       - ./tmp:/tmp # mount the tmp folder to share PlanSys2 generated plans
     environment:

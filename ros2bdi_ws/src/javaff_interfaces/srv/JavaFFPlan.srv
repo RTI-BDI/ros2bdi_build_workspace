@@ -1,0 +1,8 @@
+ros2_bdi_interfaces/Desire fulfilling_desire
+string      problem
+int32       search_interval
+int32       max_pplan_size
+int32       max_empty_search_intervals
+---
+bool          accepted
+string        msg
