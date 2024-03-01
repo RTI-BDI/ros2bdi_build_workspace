@@ -1,13 +1,20 @@
 
-# A docker-based build environment for ROS2BDI, including personalized ros2_planning_system.
+# A docker-based build environment for ROS2-BDI
 
-This repository can be used to setup a building and runnning environment based on docker.
+This repository includes a build environment (based on docker) for ROS2-BDI.
 
-Git submodule is used to reference external repositories https://github.com/RTI-BDI/ROS2-BDI and https://github.com/RTI-BDI/ros2_planning_system.
+External repos from RTI-BDI are here included in `./ros2bdi_ws/src` as git submodules. Changes needs to be committed directly to the original repos. Then, commit this repo (to commit the updated hash-referenced-commit of the external-repo, on which each submodule refers to).
 
-Code building can be done on docker, while changes to source code should be done on local machine and then committed directly to the referenced source repositories.
+#### Submodule:
 
-Here are the basics steps to getting started:
+ - https://github.com/RTI-BDI/ROS2-BDI/tree/humble_online
+ - https://github.com/RTI-BDI/ros2_planning_system/tree/humble
+ - https://github.com/RTI-BDI/JavaFF/tree/squashed
+
+
+
+## Building
+Code building should be done within docker. Here are the basics steps to getting started:
 
 0. Initialize submodule repositories:
     ```console
@@ -25,13 +32,22 @@ Here are the basics steps to getting started:
     make docker-login
     ```
 
-3. Build PlanSys2 and ROS2BDI within docker:
+3. Clone additional repositories from ros2 and ros2-java (repos taken from [https://github.com/ros2-java/ros2_java](https://github.com/ros2-java/ros2_java)):
     ```console
-    root@ros2bdi-build-env: ~/plansys2_ws ./build.sh
-    root@ros2bdi-build-env: ~/ros2bdi_ws ./build.sh
+    cd ./src
+    vcs import < ros2_java_desktop.repos
     ```
 
-5. Configure Webots to run locally:
+3. Build within docker:
+    ```console
+    root@ros2bdi-build-env: ~/ros2bdi_ws ./build_all.sh
+    ```
+
+
+
+## Running
+
+1. Configure Webots to run locally:
     
     We will run webots on host machine (while ros2bdi and plansys2 are running on docker).
     To do so, Webots 2023_b needs to be installed and webots local simulation python server should be listening on port 2000:
@@ -46,7 +62,7 @@ Here are the basics steps to getting started:
     make webots-mac
     ```
 
-6. Manually run nodes:
+2. Manually run nodes:
 
     Type `make` to get list of commands:
 
@@ -77,7 +93,7 @@ Here are the basics steps to getting started:
     make doker-login ros2 launch webots_ros2_simulations blocks_world.launch.py
     ```
 
-6. Alternatively, with ***docker compose***:
+3. Alternatively, with ***docker compose***:
 
     ```console
     sudo docker compose up

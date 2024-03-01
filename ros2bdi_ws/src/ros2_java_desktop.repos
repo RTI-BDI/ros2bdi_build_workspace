@@ -33,28 +33,24 @@ repositories:
     url: https://github.com/ros2/unique_identifier_msgs.git
     version: 2.2.1
 
-  ros2_java/ros2_java:
+  ros2-java/ros2_java:
     type: git
     url: https://github.com/ros2-java/ros2_java.git
     version: main
-  ros2_java/ros2_java_examples:
+  ros2-java/ros2_java_examples:
     type: git
     url: https://github.com/ros2-java/ros2_java_examples.git
     version: main
-  ros2_java/ament_java:
+  ros2-java/ament_java:
     type: git
     url: https://github.com/ros2-java/ament_java.git
     version: main
-  ros2_java/ament_gradle_plugin:
-    type: git
-    url: https://github.com/ros2-java/ament_gradle_plugin.git
-    version: master
 
-  colcon-gradle:
+  colcon/colcon-gradle:
     type: git
     url: https://github.com/colcon/colcon-gradle.git
     version: main
-  colcon-ros-gradle:
+  colcon/colcon-ros-gradle:
     type: git
     url: https://github.com/colcon/colcon-ros-gradle.git
     version: main
