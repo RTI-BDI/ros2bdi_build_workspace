@@ -1,9 +1,5 @@
 repositories:
 
-  ros2/ament_cmake_ros:
-    type: git
-    url: https://github.com/ros2/ament_cmake_ros.git
-    version: 0.10.0
   ros2/common_interfaces:
     type: git
     url: https://github.com/ros2/common_interfaces.git
@@ -12,10 +8,6 @@ repositories:
     type: git
     url: https://github.com/ros2/example_interfaces.git
     version: 0.9.3
-  ros2/libyaml_vendor:
-    type: git
-    url: https://github.com/ros2/libyaml_vendor.git
-    version: 1.2.2
   ros2/rcl_interfaces:
     type: git
     url: https://github.com/ros2/rcl_interfaces.git
@@ -24,10 +16,6 @@ repositories:
     type: git
     url: https://github.com/ros2/rosidl_defaults.git
     version: 1.2.0
-  ros2/rosidl_core:
-    type: git
-    url: https://github.com/ros2/rosidl_core.git
-    version: 0.2.0
   ros2/unique_identifier_msgs:
     type: git
     url: https://github.com/ros2/unique_identifier_msgs.git
@@ -44,13 +32,4 @@ repositories:
   ros2-java/ament_java:
     type: git
     url: https://github.com/ros2-java/ament_java.git
-    version: main
-
-  colcon/colcon-gradle:
-    type: git
-    url: https://github.com/colcon/colcon-gradle.git
-    version: main
-  colcon/colcon-ros-gradle:
-    type: git
-    url: https://github.com/colcon/colcon-ros-gradle.git
     version: main

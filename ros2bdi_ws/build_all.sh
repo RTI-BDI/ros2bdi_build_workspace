@@ -2,7 +2,7 @@
 
 
 # ---- clone additional repos from ros2 and ros-java ------------
-cd ./src
+cd ./src-java
 vcs import < ros2_java_desktop.repos
 cd ..
 
@@ -18,13 +18,17 @@ export AMENT_BUILD_MAKE_ARGS="-j$NUM_CORES"
 apt-get update
 # rosdep install -y -r -q --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}
 rosdep install --from-paths src -y -i --skip-keys "ament_tools" # as specified at https://github.com/ros2-java/ros2_java
+source /opt/ros/humble/setup.bash
 
 # ---- from ros2_planning_system ------------
 colcon build --symlink-install --base-paths src/ros2_planning_system --packages-ignore plansys2_bt_actions 2>&1 | tee ./plansys.build.log
 
 # ---- from ros2 --------------------------
-colcon build --symlink-install --base-paths src/ros2
-colcon build --symlink-install --base-paths src/ros2-java #--packages-select rcljava
+# apt-get install ros-humble-rcl*
+colcon build --symlink-install --base-paths src-java # to compile ros2-java up to rcljava
+# colcon build --symlink-install --base-paths src/ --packages-up-to rcljava # non funziona, non trova rcl_interfaces
+
+colcon build --symlink-install --base-paths src/ros2-java #--packages-up-to rcljava
 # colcon build --symlink-install --packages-select ament_java_resources ament_build_type_gradle ament_cmake_export_jars ament_cmake_export_jni_libraries rcljava_common rosidl_generator_java
 # colcon build --symlink-install --packages-select rosidl_default_generators rosidl_default_runtime builtin_interfaces std_msgs
 # colcon build --symlink-install --base-paths /opt/ros/humble --packages-select builtin_interfaces std_msgs
