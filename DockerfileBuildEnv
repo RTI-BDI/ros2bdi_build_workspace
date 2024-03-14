@@ -41,6 +41,7 @@ RUN git clone --depth 1 --branch yaml-cpp-0.6.0 https://github.com/jbeder/yaml-c
 # RUN ls /usr/lib/cmake/yaml-cpp
 ENV LD_LIBRARY_PATH /usr/local/lib:/usr/lib:$LD_LIBRARY_PATH
 ENV CMAKE_PREFIX_PATH /usr/lib/cmake:$CMAKE_PREFIX_PATH
+# RUN apt-get install ros-humble-yaml-cpp-vendor -y
 
 
 

@@ -34,28 +34,18 @@ colcon build --symlink-install --base-paths src/JavaFF --event-handlers console_
 
 # ---- from ROS2-BDI ------------------------
 colcon build --symlink-install --packages-select ros2_bdi_interfaces
-# rm -rf /root/ros2bdi_ws/build/ros2_bdi_interfaces
+# rm -rf ./build/ros2_bdi_interfaces
 
 # ---- from javaff_interfaces ---------------
 source ./install/setup.bash
 colcon build --symlink-install --base-paths src/javaff_interfaces
 # colcon build --symlink-install --packages-select javaff_interfaces --packages-ignore unique_identifier_msgs action_msgs
 
-# ----- UP-TO-HERE --------------------------
-
 # ---- from ROS2-BDI ------------------------
 colcon build --packages-select ros2_bdi_utils ros2_bdi_skills ros2_bdi_bringup ros2_bdi_core --packages-skip ros2_bdi_interfaces
+##### UP-TO-HERE #####
 colcon build --symlink-install --packages-ignore ros2_bdi_tests --packages-skip ros2_bdi_interfaces ros2_bdi_utils ros2_bdi_skills ros2_bdi_bringup ros2_bdi_core
 # colcon build --symlink-install --packages-ignore ros2_bdi_tests --packages-skip ros2_bdi_interfaces
-
-# ---- from ROS2-BDI ------------------------
-source /root/ros2bdi_ws/install/setup.bash
+source ./install/setup.bash
 colcon build --symlink-install --packages-select ros2_bdi_tests
-
-# ---- from ROS2-BDI ------------------------
 # colcon build --symlink-install --packages-select webots_ros2_simulations_interfaces webots_ros2_simulations ros2_bdi_on_webots
-
-# ---- from JavaFF --------------------------
-colcon build --symlink-install --base-paths src/JavaFF --packages-skip javaff_interfaces ament_java_resources ament_build_type_gradle ament_cmake_export_jars ament_cmake_export_jni_libraries rcljava_common rosidl_generator_java
-
-
