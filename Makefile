@@ -21,6 +21,7 @@ RUN = docker run \
 	-v ./tmp:/root/tmp \
 	-v /Users/Shared/shared:/root/shared \
 	-e "WEBOTS_SHARED_FOLDER=/Users/Shared/shared:/root/shared" \
+	-e "USERNAME=root" \
 	--rm -it \
 	--name ros2bdi-build-env \
 	ros2bdi-build-env \
@@ -113,6 +114,18 @@ run-all: ## Login and run all.
 		ros2 launch ros2_bdi_on_webots carrier_a.launch.py & sleep 10; \
 		ros2 launch ros2_bdi_on_webots carrier_b.launch.py & sleep 10; \
 		ros2 launch ros2_bdi_on_webots carrier_c.launch.py\" "
+
+
+
+
+.PHONY: run-plastic
+run-plastic: ## Login and run plastic.
+	@make docker-login ros2 launch ros2_bdi_on_litter_world plastic_agent.launch.py
+
+.PHONY: run-paper
+run-paper: ## Login and run paper.
+	@make docker-login ros2 launch ros2_bdi_on_litter_world paper_agent.launch.py
+
 
 
 
