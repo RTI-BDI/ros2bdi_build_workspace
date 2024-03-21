@@ -116,6 +116,13 @@ RUN python3 -m pip install --no-deps -U git+https://github.com/colcon/colcon-ros
 
 
 
+# install dependencies for: ros2 run litter_world litter_world_ros2_controller
+RUN apt-get update && apt-get install -y -qq \
+    python3-tk \
+    python3-pil \
+    python3-pil.imagetk
+
+
 #  cloning ros2_java repositories in local workspace
 
 # RUN cd /root/ros2bdi_ws/src && \

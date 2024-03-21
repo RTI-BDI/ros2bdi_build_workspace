@@ -22,6 +22,9 @@ RUN = docker run \
 	-v /Users/Shared/shared:/root/shared \
 	-e "WEBOTS_SHARED_FOLDER=/Users/Shared/shared:/root/shared" \
 	-e "USERNAME=root" \
+	-v /tmp/.X11-unix/:/tmp/.X11-unix/ \
+	-v ${HOME}/.Xauthority:/root/.Xauthority:rw \
+	-e "DISPLAY=host.docker.internal:0" \
 	--rm -it \
 	--name ros2bdi-build-env \
 	ros2bdi-build-env \
@@ -76,6 +79,7 @@ help:
 
 .PHONY: docker-login
 docker-login: ## Login to the container. If the container is already running, login into existing one.
+	xhost +localhost
 	@echo ${LOGIN}
 	@echo
 	@${LOGIN}
@@ -117,7 +121,6 @@ run-all: ## Login and run all.
 
 
 
-
 .PHONY: run-plastic
 run-plastic: ## Login and run plastic.
 	@make docker-login ros2 launch ros2_bdi_on_litter_world plastic_agent.launch.py
@@ -126,6 +129,9 @@ run-plastic: ## Login and run plastic.
 run-paper: ## Login and run paper.
 	@make docker-login ros2 launch ros2_bdi_on_litter_world paper_agent.launch.py
 
+.PHONY: run-litter
+run-litter: ## Login and run litter-world.
+	@make docker-login CMD="ros2 run litter_world litter_world_ros2_controller --ros-args -p init_world:=./src/ROS2-BDI/simulations/litter_world/init/c_7x7.json -p upd_interval:=1600 -p show_agent_view:=plastic_agent -p world_size_px:=400"
 
 
 

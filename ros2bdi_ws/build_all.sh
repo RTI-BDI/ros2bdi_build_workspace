@@ -34,11 +34,11 @@ colcon build --symlink-install --base-paths src-java 2>&1 | tee ./rcljava.build.
 
 # ---- from src/ros2_planning_system ----------
 source ./install/setup.bash
-colcon build --symlink-install --base-paths src/ros2_planning_system --event-handlers console_direct+ --packages-ignore plansys2_bt_actions 2>&1 | tee ./plansys.build.log # contains plansys2_msgs
+colcon build --symlink-install --base-paths src/ros2_planning_system --event-handlers console_direct+ 2>&1 | tee ./plansys.build.log # contains plansys2_msgs
 
 # ---- from src/JavaFF ------------------------
 source ./install/setup.bash
-colcon build --symlink-install --base-paths src/JavaFF --event-handlers console_direct+ 2>&1 | tee ./javaff.build.log # depends on: rcljava plansys2_msgs lifecycle_msgs example_interfaces javaff_interfaces
+colcon build --symlink-install --packages-select JavaFF --event-handlers console_direct+ 2>&1 | tee ./javaff.build.log # depends on: rcljava plansys2_msgs lifecycle_msgs example_interfaces javaff_interfaces
 
 # ---- from src/ROS2-BDI ----------------------
 source ./install/setup.bash
